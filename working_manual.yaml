@@ -1,0 +1,8 @@
+id: oomlout_oomp_utility_navigation_generation
+name: "OOMP Utility Navigation Generation"
+description: "This is part of OOMP the Oopen Organization Method For Parts. For more details: https://github.com/oomlout/oomp_base  "
+readme_manual: |
+  ## What it does
+  This utility generates a navigation folder seperating parts by hierarchy.
+  ## Usage
+  * run utility_oomp_navigation_generation.py from within an oomp folder
