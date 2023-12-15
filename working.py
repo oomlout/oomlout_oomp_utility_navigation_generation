@@ -178,8 +178,8 @@ def generate(**kwargs):
                 if details[item] != "":         
                     folder_name += f"/{details[item]}"
         folder_name += f"/part"
-        folder_no_parts = folder.replace("/parts",f"/{folder_navigation}")
-        folder_no_parts = folder_no_parts.replace("/things",f"/{folder_navigation}")
+        folder_no_parts = folder.replace("parts",f"{folder_navigation}")
+        folder_no_parts = folder_no_parts.replace("things",f"{folder_navigation}")
         folder_name = f"{folder_no_parts}{folder_name}"
 
         directory_source = directory
