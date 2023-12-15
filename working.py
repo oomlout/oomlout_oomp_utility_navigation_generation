@@ -179,7 +179,7 @@ def generate(**kwargs):
                     folder_name += f"/{details[item]}"
         folder_name += f"/part"
         folder_no_parts = folder.replace("/parts",f"/{folder_navigation}")
-        folder_no_parts = folder.replace("/things",f"/{folder_navigation}")
+        folder_no_parts = folder_no_parts.replace("/things",f"/{folder_navigation}")
         folder_name = f"{folder_no_parts}{folder_name}"
 
         directory_source = directory
@@ -203,7 +203,7 @@ if __name__ == '__main__':
     kwargs = {}
     folder = os.path.dirname(__file__)
     #folder = "C:/gh/oomlout_oomp_builder/parts"
-    #folder = "C:/gh/oomlout_oomp_part_generation_version_1/parts"
+    folder = "C:/gh/oomlout_oomp_part_generation_version_1/parts"
     #folder = "C:/gh/oomlout_oobb_version_4/things"
     kwargs["folder"] = folder
     overwrite = False
