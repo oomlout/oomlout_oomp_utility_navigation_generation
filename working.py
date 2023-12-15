@@ -37,6 +37,7 @@ def main(**kwargs):
 def generate_navigation(**kwargs):
     folder = kwargs.get("folder", os.getcwd())
     folder = folder.replace("parts",folder_navigation)
+    folder = folder.replace("things",folder_navigation)
     directory_navigation = folder
     #get all the directories recurively using glob
     directory_list = glob.glob(f"{folder}/**/", recursive=True)
@@ -67,7 +68,7 @@ def generate_navigation(**kwargs):
                     current_directory_list_new.append(item)
             current_directory_list = current_directory_list_new
 
-            if len(current_directory_list) < 1000:
+            if len(current_directory_list) < 6000:
 
                 # split the glob into a nice dict of the data
                 file_paths = current_directory_list
@@ -118,6 +119,7 @@ def generate_navigation(**kwargs):
                 #write the markdown content to the readme
                 if markdown_content != "":
                     with open(file_readme, "w") as f:
+                        print(f"writing {file_readme}")
                         f.write(markdown_content)
                 
 def generate_markdown(directory_dict, current_link='', indent=0):
