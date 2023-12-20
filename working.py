@@ -13,6 +13,12 @@ folder_navigation = "navigation"
 
 
 file_configuration = os.path.join(folder_configuration, "configuration.yaml")
+file_configuration = file_configuration.replace("\\","/")
+#if configuration file doesn't exist use configuration_default.yaml
+if not os.path.exists(file_configuration):
+    file_configuration = os.path.join(folder_configuration, "configuration_default.yaml")
+    file_configuration = file_configuration.replace("\\","/")
+    print(f"using default configuration file: {file_configuration}")
 #import templates
 with open(file_configuration, 'r') as stream:
     try:
