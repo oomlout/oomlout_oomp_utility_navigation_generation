@@ -125,7 +125,7 @@ def generate_navigation(**kwargs):
                 #write the markdown content to the readme
                 if markdown_content != "":
                     with open(file_readme, "w") as f:
-                        print(f"writing {file_readme}")
+                        #print(f"writing {file_readme}")
                         f.write(markdown_content)
                 
 def generate_markdown(directory_dict, current_link='', indent=0):
