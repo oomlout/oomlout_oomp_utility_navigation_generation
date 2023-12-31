@@ -131,7 +131,34 @@ def generate_navigation(**kwargs):
 def generate_markdown(directory_dict, current_link='', indent=0):
     markdown_content = ''
     for key, value in directory_dict.items():
-        markdown_content += '  ' * indent + f'* [{key}]({current_link}/{key})\n'
+        if current_link != '':
+            key_sanitized = key
+            if key_sanitized.startswith("/"):
+                key_sanitized = key_sanitized[1:]
+            current_link_sanitized = current_link
+            if current_link_sanitized.startswith("/"):
+                current_link_sanitized = current_link_sanitized[1:]
+            markdown_content += '  ' * indent + f'* [{key}]({current_link_sanitized}/{key})\n'
+        else:
+            key_sanitized = key
+            if key_sanitized.startswith("/"):
+                key_sanitized = key_sanitized[1:]
+            markdown_content += '  ' * indent + f'* [{key_sanitized}]({key_sanitized})\n'
+        if isinstance(value, dict):
+            current_link_sanitized = current_link
+            if current_link_sanitized.startswith("/"):
+                current_link_sanitized = current_link_sanitized[1:]                
+            markdown_content += generate_markdown(value, f'{current_link_sanitized}/{key}', indent + 1)
+    
+    return markdown_content
+
+def generate_markdown_working_well(directory_dict, current_link='', indent=0):
+    markdown_content = ''
+    for key, value in directory_dict.items():
+        if current_link != '':
+            markdown_content += '  ' * indent + f'* [{key}]({current_link}/{key})\n'
+        else:
+            markdown_content += '  ' * indent + f'* [{key}]({key})\n'
         if isinstance(value, dict):
             current_link_sanitized = current_link
             if current_link_sanitized.startswith("/"):
