@@ -171,18 +171,43 @@ def generate_markdown_working_well(directory_dict, current_link='', indent=0):
 def create_recursive(**kwargs):
     folder = kwargs.get("folder", os.path.dirname(__file__))
     kwargs["folder"] = folder
-    folder_template_absolute = kwargs.get("folder_template_absolute", "")
-    kwargs["folder_template_absolute"] = folder_template_absolute
+    filter = kwargs.get("filter", "")
+    kwargs["filter"] = filter
+    
+    
+    import threading
+    semaphore = threading.Semaphore(1000)
+    threads = []
+
+    def create_thread(**kwargs):
+        with semaphore:
+            create_recursive_thread(**kwargs)
+    
     for item in os.listdir(folder):
-        filter = kwargs.get("filter", "")
-        if filter in item:
-            item_absolute = os.path.join(folder, item)
-            item_absolute = item_absolute.replace("\\","/")
-            if os.path.isdir(item_absolute):
-                #if working.yaml exists in the folder
-                if os.path.exists(os.path.join(item_absolute, "working.yaml")):
-                    kwargs["directory"] = item_absolute
-                    create(**kwargs)
+        kwargs["item"] = copy.deepcopy(item)
+        thread = threading.Thread(target=create_thread, kwargs=copy.deepcopy(kwargs))
+        threads.append(thread)
+        thread.start()
+    for thread in threads:
+        thread.join()
+    
+
+
+
+def create_recursive_thread(**kwargs):
+    item = kwargs.get("item", "")
+    filter = kwargs.get("filter", "")
+    folder = kwargs.get("folder")
+    if filter in item:
+        item_absolute = os.path.join(folder, item)
+        item_absolute = item_absolute.replace("\\","/")
+        if os.path.isdir(item_absolute):
+            #if working.yaml exists in the folder
+            if os.path.exists(os.path.join(item_absolute, "working.yaml")):
+                kwargs["directory"] = item_absolute
+                create(**kwargs)
+
+
 
 def create(**kwargs):
     directory = kwargs.get("directory", os.getcwd())    
