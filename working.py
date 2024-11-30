@@ -4,7 +4,7 @@ import glob
 import copy
 import jinja2    
 import shutil
-
+import pickle
 
 folder_configuration = "configuration"
 folder_configuration = os.path.join(os.path.dirname(__file__), folder_configuration)
@@ -185,7 +185,8 @@ def create_recursive(**kwargs):
     
     for item in os.listdir(folder):
         kwargs["item"] = copy.deepcopy(item)
-        thread = threading.Thread(target=create_thread, kwargs=copy.deepcopy(kwargs))
+        #thread = threading.Thread(target=create_thread, kwargs=copy.deepcopy(kwargs))
+        thread = threading.Thread(target=create_thread, kwargs=pickle.loads(pickle.dumps(kwargs, -1)))
         threads.append(thread)
         thread.start()
     for thread in threads:
