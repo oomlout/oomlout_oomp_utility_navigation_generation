@@ -9,7 +9,7 @@ import pickle
 folder_configuration = "configuration"
 folder_configuration = os.path.join(os.path.dirname(__file__), folder_configuration)
 
-folder_navigation = "navigation"
+folder_navigation = "navigation_oomp"
 
 
 file_configuration = os.path.join(folder_configuration, "configuration.yaml")
