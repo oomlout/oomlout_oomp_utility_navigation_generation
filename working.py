@@ -11,6 +11,7 @@ folder_configuration = os.path.join(os.path.dirname(__file__), folder_configurat
 
 folder_navigation = "navigation_oomp"
 
+cnt_navigation = 1
 
 file_configuration = os.path.join(folder_configuration, "configuration.yaml")
 file_configuration = file_configuration.replace("\\","/")
@@ -25,6 +26,7 @@ with open(file_configuration, 'r') as stream:
         configuration = yaml.load(stream, Loader=yaml.FullLoader)
     except yaml.YAMLError as exc:   
         print(exc)
+
 
 
 def main(**kwargs):
@@ -251,6 +253,7 @@ def generate(**kwargs):
             command = f"xcopy \"{directory_source}\" \"{directory_destination}\" /e /i /y"
         else:
             command = f"cp -r \"{directory_source}\" \"{directory_destination}\""
+        
         os.system(command)
 
     else:
