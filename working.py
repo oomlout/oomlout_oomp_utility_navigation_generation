@@ -36,10 +36,18 @@ def main(**kwargs):
     folder = kwargs.get("folder", f"{os.path.dirname(__file__)}/parts")
     folder = folder.replace("\\","/")
     
+    filt = kwargs.get("filter", "")
+
     kwargs["file_template_list"] = configuration
+
     print(f"oomlout_oomp_utility_readme_generation for folder: {folder}")
-    create_recursive(**kwargs)
-    generate_navigation(**kwargs)
+
+    #if no filter is provided, set it to empty string
+    if filt == "":
+        create_recursive(**kwargs)
+        generate_navigation(**kwargs)
+    else:
+        print(f"******  skipping because a filter is present  ******")
 
 
 def generate_navigation(**kwargs):
@@ -227,6 +235,7 @@ def generate(**kwargs):
     kwargs["yaml_file"] = yaml_file
     #load the yaml file
     with open(yaml_file, 'r') as stream:
+        details = None
         try:
             details = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:   
