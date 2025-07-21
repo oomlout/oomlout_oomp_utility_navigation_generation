@@ -43,7 +43,8 @@ def main(**kwargs):
     print(f"oomlout_oomp_utility_readme_generation for folder: {folder}")
 
     #if no filter is provided, set it to empty string
-    if filt == "":
+    #if filt == "":
+    if True:
         create_recursive(**kwargs)
         generate_navigation(**kwargs)
     else:
