@@ -40,7 +40,7 @@ def main(**kwargs):
 
     kwargs["file_template_list"] = configuration
 
-    print(f"oomlout_oomp_utility_readme_generation for folder: {folder}")
+    print(f"oomlout_oomp_utility_navigation_generation for folder: {folder}")
 
     #if no filter is provided, set it to empty string
     #if filt == "":
@@ -71,6 +71,8 @@ def generate_navigation(**kwargs):
         if not directory.endswith("part/"):
             current_directory_list = glob.glob(f"{directory}/**/", recursive=True)
             file_readme = os.path.join(directory, "readme.md")
+            file_html = os.path.join(directory, "index.html")
+            
             
             # for each directory in the list
             current_directory_list_new = []
@@ -138,6 +140,13 @@ def generate_navigation(**kwargs):
                     with open(file_readme, "w") as f:
                         #print(f"writing {file_readme}")
                         f.write(markdown_content)
+                #write the html content to the index.html
+                import markdown
+                html_content = markdown.markdown(markdown_content)
+                if html_content != "":
+                    with open(file_html, "w") as f:
+                        #print(f"writing {file_html}")
+                        f.write(html_content)
                 
 def generate_markdown(directory_dict, current_link='', indent=0):
     markdown_content = ''
@@ -177,7 +186,10 @@ def generate_markdown_working_well(directory_dict, current_link='', indent=0):
             markdown_content += generate_markdown(value, f'{current_link_sanitized}/{key}', indent + 1)
     
     return markdown_content
-            
+
+
+
+counter = 1      
 
 def create_recursive(**kwargs):
     folder = kwargs.get("folder", os.path.dirname(__file__))
@@ -190,48 +202,90 @@ def create_recursive(**kwargs):
     semaphore = threading.Semaphore(1000)
     threads = []
 
-    def create_thread(**kwargs):
+    print("******  creating copy command list  ******")
+    def create_thread(item, commands, **kwargs):
+        global counter
         with semaphore:
-            create_recursive_thread(**kwargs)
+            command = create_recursive_thread(item,**kwargs)
+            if command != None:
+                commands.append(command)
+                counter += 1
+                if counter % 100 == 0:
+                    print(".", end="", flush=True)
     
+    from functools import partial
+
+    commands = []
+    counter = 1
     for item in os.listdir(folder):
-        kwargs["item"] = copy.deepcopy(item)
+        #kwargs["item"] = copy.deepcopy(item)
         #thread = threading.Thread(target=create_thread, kwargs=copy.deepcopy(kwargs))
-        thread = threading.Thread(target=create_thread, kwargs=pickle.loads(pickle.dumps(kwargs, -1)))
+        #thread = threading.Thread(target=create_thread, kwargs))
+        #create thread sent item and kwargs sperately
+        thread = threading.Thread(target=partial(create_thread, item=item, commands=commands,**kwargs))
         threads.append(thread)
         thread.start()
+    print()
+
+    #wait for threads to finish
     for thread in threads:
-        thread.join()
+        thread.join()    
+    
+    print("******  copying across  ******")
+    counter = 1
+    for command in commands:
+        #run as os.system don't print output to terminal        
+        mode = "subprocess"
+        if mode == "os":
+            os.system(command)
+        elif mode == "subprocess":
+            import subprocess
+            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+            if result.returncode != 0:
+                print(f"Error: {result.stderr}")
+            else:
+                pass
+                #print(f"Output: {result.stdout}")
+        counter += 1
+        if counter % 100 == 0:
+            print(".", end="", flush=True)
+    print()
+    pass
+
+    
     
 
 
 
-def create_recursive_thread(**kwargs):
-    item = kwargs.get("item", "")
+def create_recursive_thread(item, **kwargs):
+    #item = kwargs.get("item", "")
     filter = kwargs.get("filter", "")
     folder = kwargs.get("folder")
-    if filter in item:
+    #if filter in item: #don't use filter for navigation
+    if True:
         item_absolute = os.path.join(folder, item)
         item_absolute = item_absolute.replace("\\","/")
         if os.path.isdir(item_absolute):
             #if working.yaml exists in the folder
             if os.path.exists(os.path.join(item_absolute, "working.yaml")):
-                kwargs["directory"] = item_absolute
-                create(**kwargs)
+                directory = item_absolute
+                return create(item, directory, **kwargs)
 
 
 
-def create(**kwargs):
-    directory = kwargs.get("directory", os.getcwd())    
-    kwargs["directory"] = directory
+def create(item, directory, **kwargs):
+    #directory = kwargs.get("directory", os.getcwd())    
+    #kwargs["directory"] = directory
     file_template_list = kwargs.get("file_template_list", configuration)
-    kwargs["file_template_list"] = file_template_list
-    generate(**kwargs)
+
+    #kwargs["file_template_list"] = file_template_list
+    return generate(item, directory, **kwargs)
     
 
-def generate(**kwargs):
-    directory = kwargs.get("directory", os.getcwd())
+def generate(item, directory, **kwargs):
+    #directory = kwargs.get("directory", os.getcwd())
     folder = kwargs.get("folder", os.getcwd())
+
     yaml_file = os.path.join(directory, "working.yaml")
     kwargs["yaml_file"] = yaml_file
     #load the yaml file
@@ -260,11 +314,18 @@ def generate(**kwargs):
 
         #copy the folder and create neccesary directories using xcopy for windows with overwite and cp for linux
         if os.name == "nt":
-            command = f"xcopy \"{directory_source}\" \"{directory_destination}\" /e /i /y"
+            if True:
+                command = f"xcopy \"{directory_source}\" \"{directory_destination}\" /e /i /y"
+                #os.system(command)
+                return command
+            else:
+                shutil.copytree(directory_source, directory_destination, dirs_exist_ok=True)
         else:
             command = f"cp -r \"{directory_source}\" \"{directory_destination}\""
+            os.system(command)
         
-        os.system(command)
+        return command
+        
 
     else:
         print(f"no yaml file found in {directory}")    
