@@ -5,6 +5,9 @@ import copy
 import jinja2    
 import shutil
 import pickle
+from pygments.formatters import HtmlFormatter
+import markdown
+
 
 folder_configuration = "configuration"
 folder_configuration = os.path.join(os.path.dirname(__file__), folder_configuration)
@@ -142,7 +145,8 @@ def generate_navigation(**kwargs):
                         f.write(markdown_content)
                 #write the html content to the index.html
                 import markdown
-                html_content = markdown.markdown(markdown_content)
+                #html_content = markdown.markdown(markdown_content)
+                html_content = md_to_pretty_html(markdown_content, title=f"{item} - OOMLout Part")
                 if html_content != "":
                     with open(file_html, "w") as f:
                         #print(f"writing {file_html}")
@@ -330,7 +334,47 @@ def generate(item, directory, **kwargs):
     else:
         print(f"no yaml file found in {directory}")    
 
+def md_to_pretty_html(md_text: str, title="My Page") -> str:
+    exts = [
+        "extra",          # tables, fenced code, footnotes, attr_list, etc.
+        "toc",            # heading anchors + optional [TOC]
+        "admonition",     # !!! note style callouts
+        "codehilite",     # pygments syntax highlighting
+    ]
+    html_body = markdown.markdown(
+        md_text,
+        extensions=exts,
+        extension_configs={
+            "toc": {"permalink": "¶"},
+            "codehilite": {"guess_lang": False, "pygments_style": "friendly"},
+        },
+    )
+    pyg_css = HtmlFormatter(style="friendly").get_style_defs(".codehilite")
 
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title}</title>
+<!-- Classless CSS = modern look without touching your HTML -->
+<link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.classless.min.css">
+<style>
+{pyg_css}
+/* small niceties */
+main{{max-width:72ch;margin:auto;padding:2rem 1rem}}
+pre{{overflow-x:auto}}
+img{{max-width:100%;height:auto}}
+.admonition{{border-left:4px solid rgba(0,0,0,.15);padding:.75rem 1rem;margin:1rem 0;background:rgba(0,0,0,.03);border-radius:.5rem}}
+.admonition > .admonition-title{{font-weight:600;margin-bottom:.25rem}}
+</style>
+</head>
+<body>
+<main>
+{html_body}
+</main>
+</body>
+</html>"""
 
 if __name__ == '__main__':
     #folder is the path it was launched from
