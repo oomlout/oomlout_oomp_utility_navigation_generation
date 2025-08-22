@@ -203,7 +203,7 @@ def create_recursive(**kwargs):
     
     
     import threading
-    semaphore = threading.Semaphore(1000)
+    semaphore = threading.Semaphore(10)
     threads = []
 
     print("******  creating copy command list  ******")
