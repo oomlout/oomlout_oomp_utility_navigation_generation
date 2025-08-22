@@ -146,7 +146,7 @@ def generate_navigation(**kwargs):
                 #write the html content to the index.html
                 import markdown
                 #html_content = markdown.markdown(markdown_content)
-                html_content = md_to_pretty_html(markdown_content, title=f"{item} - OOMLout Part")
+                html_content = md_to_pretty_html(markdown_content, title=f"Navigation for {directory_short}")
                 if html_content != "":
                     with open(file_html, "w") as f:
                         #print(f"writing {file_html}")
