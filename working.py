@@ -142,8 +142,11 @@ def generate_navigation(**kwargs):
                 if markdown_content != "":
                     with open(file_readme, "w") as f:
                         #print(f"writing {file_readme}")
-                        #write with unicode compatibility
-                        f.write(markdown_content.encode('utf-8'))
+                        #write with unicode compatibility didnt work
+                        #f.write(markdown_content.encode('utf-8'))
+                        #write by line
+                        for line in markdown_content.splitlines():
+                            f.write(line + "\n")
                 #write the html content to the index.html
                 import markdown
                 #html_content = markdown.markdown(markdown_content)
