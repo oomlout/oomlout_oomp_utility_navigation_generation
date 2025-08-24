@@ -28,7 +28,7 @@ with open(file_configuration, 'r') as stream:
     try:
         configuration = yaml.load(stream, Loader=yaml.FullLoader)
     except yaml.YAMLError as exc:   
-        print(exc)
+        print(f"error 1: {exc}")
 
 
 
@@ -142,7 +142,8 @@ def generate_navigation(**kwargs):
                 if markdown_content != "":
                     with open(file_readme, "w") as f:
                         #print(f"writing {file_readme}")
-                        f.write(markdown_content)
+                        #write with unicode compatibility
+                        f.write(markdown_content.encode('utf-8'))
                 #write the html content to the index.html
                 import markdown
                 #html_content = markdown.markdown(markdown_content)
@@ -298,7 +299,7 @@ def generate(item, directory, **kwargs):
         try:
             details = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:   
-            print(exc)
+            print(f"error 2: {exc}")
 
     if details != None:
 
